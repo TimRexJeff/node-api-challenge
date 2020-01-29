@@ -1,4 +1,7 @@
+const Projects = require('../data/helpers/projectModel')
+
 module.exports = {
+    get,
     validateProject,
     validateProjectId
 }
@@ -9,7 +12,7 @@ function validateProject(req, res, next) {
         res.status(400)
         .json({ message: 'missing project data' })
   
-    } else if (!req.body.text) {
+    } else if (!req.body) {
         res.status(400)
         .json({ message: 'missing required text field' })
   
@@ -18,8 +21,34 @@ function validateProject(req, res, next) {
     }
 }
 
+function get(id) {
+    let query = db("projects as p")
+
+    if (id) {
+        query.where("p.id", id).first()
+
+        const promises = [query, this.getProjectActions(id)] // [ projects, actions ]
+
+        return Promise.all(promises).then(function(results) {
+            let [project, actions] = results
+
+            if (project) {
+                project.actions = actions
+
+                return mappers.projectToBody(project)
+            } else {
+                return null
+            }
+        })
+    } else {
+        return query.then(projects => {
+            return projects.map(project => mappers.projectToBody(project))
+        })
+    }
+}
+
 function validateProjectId(req, res, next) {
-    Projects.getById(req.params.id)
+    Projects.get(req.params.id)
         .then(project => {
 
         if (project) {

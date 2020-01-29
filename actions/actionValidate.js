@@ -9,9 +9,9 @@ function validateAction(req, res, next) {
         res.status(400)
         .json({ message: 'missing action data' })
   
-    } else if (!req.body.name) {
+    } else if (!req.body) {
         res.status(400)
-        .json({ message: 'missing required name field' })
+        .json({ message: 'missing required field' })
 
     } else {
         next()

@@ -46,6 +46,19 @@ router.get('/', (req, res) => {
         })
 })
 
+router.get('/:id', (req, res) => {
+    Actions.get(req.params.id)
+  
+        .then(actions => {
+            res.status(200)
+            .json(actions)})
+    
+        .catch(error => {
+            res.status(500)
+            .json({ error: 'We ran into an error retrieving the actions' })
+        })
+})
+
 
 
 /************************/
